@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const cors = require('cors');
 const express = require('express');
 const app = express();
@@ -6,27 +7,16 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static('build'));
 
-let notes = [
-  {
-    id: 1,
-    content: "HTML is easy",
-    date: "2019-05-30T17:30:31.098Z",
-    important: true
-  },
-  {
-    id: 2,
-    content: "Browser can execute only Javascript",
-    date: "2019-05-30T18:39:34.091Z",
-    important: false
-  },
-  {
-    id: 3,
-    content: "GET and POST are the most important methods of HTTP protocol",
-    date: "2019-05-30T19:20:14.298Z",
-    important: true
-  }
-];
+const url = `mongodb+srv://fullstack:${password}@cluster0.mas2j.mongodb.net/note-app?retryWrites=true&w=majority`;
+mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false, useCreateIndex: true });
 
+const noteSchema = new mongoose.Schema({
+  content: String,
+  date: Date,
+  important: Boolean,
+});
+
+const Note = mongoose.model('Note', noteSchema);
 // const requestLogger = (req, res, next) => {
 //   console.log('Method:', req.method);
 //   console.log('Path:', req.path);
@@ -42,7 +32,9 @@ app.get('/', (req, res) => {
 });
 
 app.get('/api/notes', (req, res) => {
-  res.json(notes);
+  Note.find({}).then(notes => {
+    res.json(notes);
+  });
 });
 
 app.get('/api/notes/:id', (req, res) => {

@@ -1,22 +1,24 @@
+require('dotenv').config();
 const mongoose = require('mongoose');
-const cors = require('cors');
 const express = require('express');
 const app = express();
+const cors = require('cors');
+const Note = require('./models/note');
 
 app.use(cors());
 app.use(express.json());
 app.use(express.static('build'));
 
-const url = `mongodb+srv://fullstack:${password}@cluster0.mas2j.mongodb.net/note-app?retryWrites=true&w=majority`;
-mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false, useCreateIndex: true });
+const url = process.env.MONGODB_URI;
 
-const noteSchema = new mongoose.Schema({
-  content: String,
-  date: Date,
-  important: Boolean,
-});
+mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false, useCreateIndex: true })
+  .then(() => {
+    console.log('Connected to MongoDB');
+  })
+  .catch(err => {
+    console.log('Error connecting to MongoDB:', err);
+  });
 
-const Note = mongoose.model('Note', noteSchema);
 // const requestLogger = (req, res, next) => {
 //   console.log('Method:', req.method);
 //   console.log('Path:', req.path);
@@ -32,9 +34,15 @@ app.get('/', (req, res) => {
 });
 
 app.get('/api/notes', (req, res) => {
-  Note.find({}).then(notes => {
-    res.json(notes);
-  });
+  console.log('fetching notes...')
+  Note.find({})
+    .then(notes => {
+      res.json(notes);
+      console.log('notes fetched succesfully');
+  })
+  .catch(err => {
+    console.log('Error while fetching notes:', err)
+  })
 });
 
 app.get('/api/notes/:id', (req, res) => {
@@ -88,7 +96,7 @@ const unknownEndpoint = (req, res) => {
 
 app.use(unknownEndpoint);
 
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });

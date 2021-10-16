@@ -19,15 +19,15 @@ mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true, useFind
     console.log('Error connecting to MongoDB:', err);
   });
 
-// const requestLogger = (req, res, next) => {
-//   console.log('Method:', req.method);
-//   console.log('Path:', req.path);
-//   console.log('Body:', req.body);
-//   console.log('---');
-//   next();
-// };
+const requestLogger = (req, res, next) => {
+  console.log('Method:', req.method);
+  console.log('Path:', req.path);
+  console.log('Body:', req.body);
+  console.log('---');
+  next();
+};
 
-// app.use(requestLogger);
+app.use(requestLogger);
 
 app.get('/', (req, res) => {
   res.send('<h1>Hello World again</h1>');
@@ -54,10 +54,7 @@ app.get('/api/notes/:id', (req, res) => {
         res.status(404).end();
       }
     })
-    .catch(err => {
-      console.log(err);
-      res.status(400).send({ error: 'malformatted id' });
-    });
+    .catch(err => next(err));
 });
 
 const generateId = () => {
@@ -99,7 +96,21 @@ const unknownEndpoint = (req, res) => {
   res.status(404).send({ error: 'unknown endpoint' });
 };
 
+// handler of requests with unknown endpoint
 app.use(unknownEndpoint);
+
+const errorHandler = (err, req, res, next) => {
+  console.error(err.message);
+
+  if (error.name === 'CastError') {
+    return res.status(400).send({ error: 'malformatted id' });
+  }
+
+  next(err);
+}
+
+// handler of requests with result to errors
+app.use(errorHandler);
 
 const PORT = process.env.PORT;
 app.listen(PORT, () => {

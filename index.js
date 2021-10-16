@@ -85,11 +85,27 @@ app.post('/api/notes', (req, res) => {
   res.json(note);
 });
 
-app.delete('/api/notes/:id', (req, res) => {
-  const id = Number(req.params.id);
-  notes = notes.filter(note => note.id !== id);
+app.put('/api/notes/:id', (req, res, res, next) => {
+  const body = req.body;
 
-  res.status(202).end();
+  const note = {
+    content: body.content,
+    important: body.important
+  }
+
+  Note.findByIdAndUpdate(req.params.id, note, { new:true })
+    .then(updatedNote => {
+      res.json(updatedNote);
+    })
+    .catch(err => next(err));
+});
+
+app.delete('/api/notes/:id', (req, res, next) => {
+  Note.findByIdAndDelete(req.params.id)
+    .then(result => {
+      res.status(204).end();
+    })
+    .catch(err => next(err));
 });
 
 const unknownEndpoint = (req, res) => {

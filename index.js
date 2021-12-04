@@ -29,15 +29,12 @@ const requestuestLogger = (request, response, next) => {
 
 app.use(requestuestLogger);
 
-app.get('/api/notes', (request, response) => {
+app.get('/api/notes', (request, response, next) => {
   Note.find({})
     .then(notes => {
       response.json(notes);
-      console.log('notes fetched succesfully');
     })
-    .catch(error => {
-      console.log('error while fetching notes:', error);
-    });
+    .catch(error => next(error));
 });
 
 app.get('/api/notes/:id', (request, response, next) => {

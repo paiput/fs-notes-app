@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest --verbose",
     "start": "node index.js",
     "dev": "nodemon index.js",
     "build:ui": "rm -rf build && cd ../notes-frontend/ && npm run build --prod && cp -r build ../notes-backend",
@@ -22,6 +22,7 @@
   },
   "devDependencies": {
     "eslint": "^8.3.0",
+    "jest": "^27.4.3",
     "nodemon": "^2.0.12"
   }
 }

@@ -37,7 +37,7 @@ notesRouter.post('/', (request, response, next) => {
   note.save()
     .then(savedNote => savedNote.toJSON())
     .then(savedAndFormattedNote => {
-      response.json(savedAndFormattedNote);
+      response.status(201).json(savedAndFormattedNote);
     }) 
     .catch(error => next(error));
 });

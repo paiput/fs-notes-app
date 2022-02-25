@@ -10,7 +10,8 @@
     "build:ui": "rm -rf build && cd ../notes-frontend/ && npm run build --prod && cp -r build ../notes-backend",
     "deploy": "git push heroku main",
     "deploy:full": "npm run build:ui && git add . && git commit -m uibuild && git push && npm run deploy",
-    "logs:prod": "heroku logs --tail"
+    "logs:prod": "heroku logs --tail",
+    "start:test": "cross-env NODE_ENV=test node index.js"
   },
   "author": "Lucas Piputto",
   "license": "ISC",
